@@ -134,59 +134,97 @@ Return a list of installed packages or nil for every skipped package."
 
 
 ;;复制粘贴
-(defun copy-from-osx ()
-  (shell-command-to-string "pbpaste"))
-(defun paste-to-osx (text &optional push)
-  (let ((process-connection-type nil))
-    (let ((proc (start-process"pbcopy" "*Messages*" "pbcopy")))
-      (process-send-string proc text)
-      (process-send-eof proc))))
-(setq interprogram-cut-function 'paste-to-osx)
-(setq interprogram-paste-function 'copy-from-osx)
+;;(defun copy-from-osx ()
+;;  (shell-command-to-string "pbpaste"))
+;;(defun paste-to-osx (text &optional push)
+;;  (let ((process-connection-type nil))
+;;    (let ((proc (start-process"pbcopy" "*Messages*" "pbcopy")))
+;;      (process-send-string proc text)
+;;     (process-send-eof proc))))
+;;(setq interprogram-cut-function 'paste-to-osx)
+;;(setq interprogram-paste-function 'copy-from-osx)
 
 ;;copy without cursor
-(defun get-point (symbol &optional arg)
-      "get the point"
-      (funcall symbol arg)
-      (point)
-     )
+;;(defun get-point (symbol &optional arg)
+;;      "get the point"
+;;      (funcall symbol arg)
+;;      (point)
+;;     )
 
-     (defun copy-thing (begin-of-thing end-of-thing &optional arg)
-       "copy thing between beg & end into kill ring"
-        (save-excursion
-          (let ((beg (get-point begin-of-thing 1))
-         	 (end (get-point end-of-thing arg)))
-            (copy-region-as-kill beg end)))
-     )
+;;     (defun copy-thing (begin-of-thing end-of-thing &optional arg)
+;;       "copy thing between beg & end into kill ring"
+;;        (save-excursion
+;;          (let ((beg (get-point begin-of-thing 1))
+;;         	 (end (get-point end-of-thing arg)))
+;;            (copy-region-as-kill beg end)))
+;;     )
 
-     (defun paste-to-mark(&optional arg)
-       "Paste things to mark, or to the prompt in shell-mode"
-       (let ((pasteMe
-     	 (lambda()
-     	   (if (string= "shell-mode" major-mode)
-     	     (progn (comint-next-prompt 25535) (yank))
-     	   (progn (goto-char (mark)) (yank) )))))
-     	(if arg
-     	    (if (= arg 1)
-     		nil
-     	      (funcall pasteMe))
-     	  (funcall pasteMe))
-     	))
-(defun copy-word (&optional arg)
-      "Copy words at point into kill-ring"
-       (interactive "P")
-       (copy-thing 'backward-word 'forward-word arg)
+;;     (defun paste-to-mark(&optional arg)
+;;       "Paste things to mark, or to the prompt in shell-mode"
+;;       (let ((pasteMe
+;;     	 (lambda()
+;;     	   (if (string= "shell-mode" major-mode)
+;;     	     (progn (comint-next-prompt 25535) (yank))
+;;     	   (progn (goto-char (mark)) (yank) )))))
+;;     	(if arg
+;;     	    (if (= arg 1)
+;;     		nil
+;;     	      (funcall pasteMe))
+;;     	  (funcall pasteMe))
+;;     	))
+;;(defun copy-word (&optional arg)
+;;     "Copy words at point into kill-ring"
+;;       (interactive "P")
+;;       (copy-thing 'backward-word 'forward-word arg)
        ;;(paste-to-mark arg)
-     )
-(global-set-key (kbd "C-c w") (quote copy-word))
-(defun copy-line (&optional arg)
-      "Save current line into Kill-Ring without mark the line "
-       (interactive "P")
-       (copy-thing 'beginning-of-line 'end-of-line arg)
-       (paste-to-mark arg)
-     )
-(global-set-key (kbd "C-c l") (quote copy-line))
+;;     )
+;;(global-set-key (kbd "C-c w") (quote copy-word))
+;;(defun copy-line (&optional arg)
+;;      "Save current line into Kill-Ring without mark the line "
+;;       (interactive "P")
+;;       (copy-thing 'beginning-of-line 'end-of-line arg)
+;;       (paste-to-mark arg)
+;;     )
+;;(global-set-key (kbd "C-c l") (quote copy-line))
 
+
+;; http://hugoheden.wordpress.com/2009/03/08/copypaste-with-emacs-in-terminal/
+;; I prefer using the "clipboard" selection (the one the
+;; typically is used by c-c/c-v) before the primary selection
+;; (that uses mouse-select/middle-button-click)
+(setq x-select-enable-clipboard t)
+
+;; If emacs is run in a terminal, the clipboard- functions have no
+;; effect. Instead, we use of xsel, see
+;; http://www.vergenet.net/~conrad/software/xsel/ -- "a command-line
+;; program for getting and setting the contents of the X selection"
+(unless window-system
+ (when (getenv "DISPLAY")
+  ;; Callback for when user cuts
+  (defun xsel-cut-function (text &optional push)
+    ;; Insert text to temp-buffer, and "send" content to xsel stdin
+    (with-temp-buffer
+      (insert text)
+      ;; I prefer using the "clipboard" selection (the one the
+      ;; typically is used by c-c/c-v) before the primary selection
+      ;; (that uses mouse-select/middle-button-click)
+      (call-process-region (point-min) (point-max) "xsel" nil 0 nil "--clipboard" "--input")))
+  ;; Call back for when user pastes
+  (defun xsel-paste-function()
+    ;; Find out what is current selection by xsel. If it is different
+    ;; from the top of the kill-ring (car kill-ring), then return
+    ;; it. Else, nil is returned, so whatever is in the top of the
+    ;; kill-ring will be used.
+    (let ((xsel-output (shell-command-to-string "xsel --clipboard --output")))
+      (unless (string= (car kill-ring) xsel-output)
+    xsel-output )))
+  ;; Attach callbacks to hooks
+  (setq interprogram-cut-function 'xsel-cut-function)
+  (setq interprogram-paste-function 'xsel-paste-function)
+  ;; Idea from
+  ;; http://shreevatsa.wordpress.com/2006/10/22/emacs-copypaste-and-x/
+  ;; http://www.mail-archive.com/help-gnu-emacs@gnu.org/msg03577.html
+ ))
 
 ;;php.
 (require 'php-mode)
