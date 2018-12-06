@@ -191,7 +191,7 @@ Return a list of installed packages or nil for every skipped package."
 ;; I prefer using the "clipboard" selection (the one the
 ;; typically is used by c-c/c-v) before the primary selection
 ;; (that uses mouse-select/middle-button-click)
-//linux 复制黏贴
+;;linux 复制黏贴
 (setq x-select-enable-clipboard t)
 
 ;; If emacs is run in a terminal, the clipboard- functions have no
