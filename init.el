@@ -55,11 +55,12 @@
 
 ;(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
 ;(add-to-list 'package-archives
-;                          '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+;;                          '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 ;;(add-to-list 'package-archives '("marmalade" . "http://elpa.emacs-china.org/marmalade/"))
 ;;
 ;; ;; If you want to use last tagged version
 (add-to-list 'package-archives '("melpa" . "http://elpa.emacs-china.org/melpa/"))
+;(add-to-list 'package-archives '("melpa" . "http://elpa.emacs-china.org/melpa-stable/"))
 ;(add-to-list 'package-archives '("melpa" . "http://melpa.org"))
 
 (defun ensure-package-installed (&rest packages)
@@ -87,14 +88,14 @@ Return a list of installed packages or nil for every skipped package."
 (package-initialize)
 
 (add-to-list 'load-path "~/.emacs.d/el-get/el-get")
-(require 'el-get)
-(el-get 'sync)
+;(require 'el-get)
+;(el-get 'sync)
 (package-initialize)
 
 ;;disable menu bar.
 (menu-bar-mode -1)
 
-(global-wakatime-mode 1)
+;(global-wakatime-mode 1)
 
 (require 'whitespace)
 (setq whitespace-line-column 80) ;; limit line length
@@ -191,7 +192,7 @@ Return a list of installed packages or nil for every skipped package."
 ;;php.
 (require 'php-mode)
 (php-mode)
-(php-enable-psr2-coding-style)
+;(php-enable-psr2-coding-style)
 
 (require 'web-mode)
 (defun bs-web-mode-hook ()
@@ -286,14 +287,6 @@ Return a list of installed packages or nil for every skipped package."
 (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.vue\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.tpl\\'" . web-mode))
-(setq web-mode-engines-alist
-      '(("php"    . "\\.phtml\\'")
-        ("blade"  . "\\.blade\\."))
-      )
-(setq web-mode-ac-sources-alist
-      '(("php" . (ac-source-yasnippet ac-source-php-auto-yasnippets))
-        ("html" . (ac-source-emmet-html-aliases ac-source-emmet-html-snippets))
-        ("css" . (ac-source-css-property ac-source-emmet-css-snippets))))
 
 
 (require 'init-company)
@@ -404,10 +397,27 @@ Return a list of installed packages or nil for every skipped package."
 (require 'helm-ack)
 
 (custom-set-variables
- ;; Does not insert '--type' option
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(ansi-color-faces-vector
+   [default default default italic underline success warning error])
+ '(ansi-color-names-vector
+   ["black" "#d55e00" "#009e73" "#f8ec59" "#0072b2" "#cc79a7" "#56b4e9" "white"])
+ '(custom-safe-themes
+   (quote
+    ("3860a842e0bf585df9e5785e06d600a86e8b605e5cc0b74320dfe667bcbe816c" "f27c3fcfb19bf38892bc6e72d0046af7a1ded81f54435f9d4d09b3bff9c52fc1" "bdc90f305ecd4008fd39174adebfcdaf729e38aac1222a872b1f054d97adbc3d" "cc60d17db31a53adf93ec6fad5a9cfff6e177664994a52346f81f62840fe8e23" default)))
+ '(fringe-mode 6 nil (fringe))
  '(helm-ack-auto-set-filetype nil)
- ;; Insert "thing-at-point 'symbol" as search pattern
- '(helm-ack-thing-at-point 'symbol))
+ '(helm-ack-thing-at-point (quote symbol))
+ '(linum-format (quote dynamic))
+ '(package-selected-packages
+   (quote
+    (yaml-mode yagist writeroom-mode workgroups2 winner-mode-enable wgrep web-mode use-package unfill tidy textile-mode tagedit switch-window swiper smex simple-httpd session scss-mode scratch rvm robe rinari request regex-tool rainbow-delimiters quack pomodoro pointback phpunit paredit page-break-lines org-bullets org-alert nvm neotree mwe-log-commands multiple-cursors multi-term move-text markdown-mode magit lua-mode link less-css-mode legalese js2-mode iedit idomenu ido-ubiquitous idle-highlight-mode ibuffer-vc hydra htmlize hl-sexp highlight-symbol helm-w3m helm-projectile helm-gtags helm-company helm-ack haskell-mode haml-mode groovy-mode grandshell-theme gitignore-mode gitconfig-mode git-timemachine git-messenger git-link git-gutter ggtags fringe-helper flyspell-lazy flymake-ruby flymake-php flymake-lua flymake-jslint flymake-css flymake-coffee flymake flycheck flx-ido expand-region exec-path-from-shell erlang emmet-mode elpy dsvn dropdown-list dired+ dictionary define-word crontab-mode cpputils-cmake connection company-statistics company-php company-c-headers color-theme coffee-mode cmake-mode cliphist buffer-move bookmark+ bbdb autopair auto-compile ace-window ace-flyspell ac-php)))
+ '(send-mail-function (quote mailclient-send-it))
+ '(wakatime-cli-path "/usr/local/bin/wakatime")
+ '(wakatime-python-bin nil))
 
 (require 'neotree)
 (setq neo-theme (if (display-graphic-p) 'icons 'arrow))
@@ -454,7 +464,7 @@ Return a list of installed packages or nil for every skipped package."
 (global-set-key (kbd "C-x b") 'helm-buffers-list)
 (global-set-key (kbd "M-x") 'helm-M-x)
 
-;;rest client 
+;;rest client
 (require 'restclient)
 (require 'restclient-helm)
 (add-to-list 'auto-mode-alist '("\\.rc\\'" . restclient-mode))
@@ -537,20 +547,3 @@ directory to make multiple eshell windows easier."
 (autoload 'ruby-mode "ruby-mode" "Major mode for ruby files" t)
    (add-to-list 'auto-mode-alist '("\\.rb$" . ruby-mode))
    (add-to-list 'interpreter-mode-alist '("ruby" . ruby-mode))
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(ansi-color-faces-vector
-   [default default default italic underline success warning error])
- '(ansi-color-names-vector
-   ["black" "#d55e00" "#009e73" "#f8ec59" "#0072b2" "#cc79a7" "#56b4e9" "white"])
- '(custom-safe-themes
-   (quote
-    ("3860a842e0bf585df9e5785e06d600a86e8b605e5cc0b74320dfe667bcbe816c" "f27c3fcfb19bf38892bc6e72d0046af7a1ded81f54435f9d4d09b3bff9c52fc1" "bdc90f305ecd4008fd39174adebfcdaf729e38aac1222a872b1f054d97adbc3d" "cc60d17db31a53adf93ec6fad5a9cfff6e177664994a52346f81f62840fe8e23" default)))
- '(fringe-mode 6 nil (fringe))
- '(linum-format (quote dynamic))
- '(send-mail-function (quote mailclient-send-it))
- '(wakatime-cli-path "/usr/local/bin/wakatime")
- '(wakatime-python-bin nil))
